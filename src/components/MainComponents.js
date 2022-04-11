@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import Home from './HomeComponent';
 import Menu from './MenuComponents';
 import About from './AboutComponent';
@@ -7,9 +6,9 @@ import Contact from './ContactComponent';
 import Header from './HeaderComponents';
 import Footer from './FooterComponent';
 import DishDetail from './DishdetailComponent';
-
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { addComment } from '../redux/ActionCreators';
 
 
 const mapStateToProps = state => {
@@ -21,6 +20,12 @@ const mapStateToProps = state => {
         promotions: state.promotions,
     }
 }
+
+const mapDispatchToProps = dispatch => ({
+
+    addComment: (dishId, rating, author, comment) => dispatch(addComment(dishId, rating, author, comment))
+
+});
 
 
 class Main extends Component {
@@ -52,7 +57,7 @@ class Main extends Component {
 
                     dish={this.props.dishes.filter((dish) => dish.id === parseInt(match.params.dishId, 10))[0]}
                     comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId, 10))}
-
+                    addComment={this.props.addComment}
 
                 />
             );
@@ -67,13 +72,9 @@ class Main extends Component {
                 <Switch>
                     <Route path="/home" component={HomePage} />
                     <Route exact path="/menu" component={() => <Menu dishes={this.props.dishes} />} />
-
                     <Route path="/menu/:dishId" component={DishWithId} />
-
                     <Route exact path="/contactus" component={Contact} />
                     <Route exact path="/aboutus" component={AboutUsPage} />
-
-                    {/* if url dosesnt match, bydefault redirect to */}
                     <Redirect to="/home" />
                 </Switch>
 
@@ -85,11 +86,6 @@ class Main extends Component {
 
 }
 
-export default withRouter(connect(mapStateToProps)(Main));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
 
 
-/**
- * 
- * - connect(): generates a wrapper container component that 
- *      subscribe to the store.
- */
